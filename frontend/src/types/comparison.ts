@@ -1,5 +1,7 @@
 import { DecorStyle } from './enums';
 
+export type PlanSource = 'moodboard' | 'quiz';
+
 export interface ComparisonPlan {
   id: string;
   name: string;
@@ -7,4 +9,6 @@ export interface ComparisonPlan {
   styleTags: DecorStyle[];
   colors: string[];
   createdAt: string;
+  source?: PlanSource;
+  profileScores?: Record<DecorStyle, number>;
 }

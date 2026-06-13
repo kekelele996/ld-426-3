@@ -11,7 +11,10 @@
         <p class="text-sm text-ink/60">主风格</p>
         <h2 class="font-display text-5xl text-ink">{{ profile.primaryStyle }}</h2>
         <p class="mt-4 text-ink/70">{{ styleDescriptions[profile.primaryStyle] }}</p>
-        <RouterLink class="mt-6 inline-block bg-clay px-5 py-3 font-semibold text-paper" to="/gallery">查看匹配图集</RouterLink>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <RouterLink class="bg-clay px-5 py-3 font-semibold text-paper" to="/gallery">查看匹配图集</RouterLink>
+          <button class="bg-ink px-5 py-3 font-semibold text-paper" @click="saveAndCompare">保存为方案并对比</button>
+        </div>
       </div>
       <StyleRadarChart :scores="profile.scores" />
     </div>
@@ -20,16 +23,20 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { styleDescriptions } from '../constants/styleDescriptions';
 import ProgressBar from '../components/common/ProgressBar.vue';
 import QuizCard from '../components/common/QuizCard.vue';
 import StyleRadarChart from '../components/common/StyleRadarChart.vue';
 import { useQuiz } from '../hooks/useQuiz';
 import { useProfileStore } from '../stores/profileStore';
+import { useComparisonStore } from '../stores/comparisonStore';
 import { QuizOption } from '../types';
 
 const quiz = useQuiz();
 const profileStore = useProfileStore();
+const comparisonStore = useComparisonStore();
+const router = useRouter();
 const completed = ref(false);
 const currentQuestion = quiz.currentQuestion;
 const progress = computed(() => (completed.value ? 100 : quiz.progress.value));
@@ -41,5 +48,11 @@ async function handleAnswer(option: QuizOption) {
     completed.value = true;
     await profileStore.saveProfile(quiz.result());
   }
+}
+
+async function saveAndCompare() {
+  if (!profile.value) return;
+  await comparisonStore.createFromProfile(profile.value);
+  router.push('/compare');
 }
 </script>

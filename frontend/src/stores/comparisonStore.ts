@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { STYLE_COLORS } from '../constants/styleColors';
-import { ComparisonPlan, DecorStyle } from '../types';
+import { ComparisonPlan, DecorStyle, StyleProfile } from '../types';
 import { db } from '../utils/db';
 
 export const useComparisonStore = defineStore('comparison', {
@@ -20,7 +20,23 @@ export const useComparisonStore = defineStore('comparison', {
         moodBoardId,
         styleTags,
         colors: styleTags.map((style) => STYLE_COLORS[style]),
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        source: 'moodboard'
+      };
+      await db.comparisons.put(plan);
+      this.plans = await db.comparisons.orderBy('createdAt').reverse().toArray();
+    },
+    async createFromProfile(profile: StyleProfile) {
+      const styleTags = [profile.primaryStyle, profile.secondaryStyle];
+      const plan: ComparisonPlan = {
+        id: crypto.randomUUID(),
+        name: `${profile.primaryStyle} 测试方案`,
+        moodBoardId: '',
+        styleTags,
+        colors: styleTags.map((style) => STYLE_COLORS[style]),
+        createdAt: new Date().toISOString(),
+        source: 'quiz',
+        profileScores: profile.scores
       };
       await db.comparisons.put(plan);
       this.plans = await db.comparisons.orderBy('createdAt').reverse().toArray();
