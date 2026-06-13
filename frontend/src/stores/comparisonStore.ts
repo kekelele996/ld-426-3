@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { STYLE_COLORS } from '../constants/styleColors';
-import { ComparisonPlan, DecorStyle, StyleProfile } from '../types';
+import { ComparisonPlan, DecorStyle, StyleProfile, isMoodboardPlan } from '../types';
 import { db } from '../utils/db';
 
 export const useComparisonStore = defineStore('comparison', {
@@ -8,7 +8,7 @@ export const useComparisonStore = defineStore('comparison', {
   actions: {
     async load() {
       this.plans = await db.comparisons.orderBy('createdAt').reverse().toArray();
-      if (!this.plans.some((p) => p.source === 'moodboard')) {
+      if (!this.plans.some(isMoodboardPlan)) {
         await this.createPlan('晨光木色', 'seed-board', [DecorStyle.Nordic, DecorStyle.Japanese]);
         await this.createPlan('克制都市', 'seed-board', [DecorStyle.Modern, DecorStyle.Minimalist]);
       }
