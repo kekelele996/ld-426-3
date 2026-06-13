@@ -52,6 +52,7 @@ async function handleAnswer(option: QuizOption) {
 
 async function saveAndCompare() {
   if (!profile.value) return;
+  await comparisonStore.load();
   await comparisonStore.createFromProfile(profile.value);
   router.push('/compare');
 }

@@ -8,7 +8,7 @@ export const useComparisonStore = defineStore('comparison', {
   actions: {
     async load() {
       this.plans = await db.comparisons.orderBy('createdAt').reverse().toArray();
-      if (!this.plans.length) {
+      if (!this.plans.some((p) => p.source === 'moodboard')) {
         await this.createPlan('晨光木色', 'seed-board', [DecorStyle.Nordic, DecorStyle.Japanese]);
         await this.createPlan('克制都市', 'seed-board', [DecorStyle.Modern, DecorStyle.Minimalist]);
       }
